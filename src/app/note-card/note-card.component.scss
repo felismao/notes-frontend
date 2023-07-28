@@ -14,6 +14,8 @@
         .x-button{
             //button appear when hovered
             opacity:1;
+            transition-delay: 0.1s;
+
         }
     }
 
@@ -24,6 +26,23 @@
             font-size: 22px;
             font-weight: bold;
             color:$orange;
+        }
+
+        .note-card-body{
+            position:relative;
+            color: #555;
+
+            // max height before fade
+            max-height: 80px;
+            overflow: hidden;
+        }
+        .fade-out{
+            position: absolute;
+            bottom:0;
+            height: 50%;
+            width: 100%;
+            background: linear-gradient(to bottom, rgba(white,0) 0%, rgba(white, 0.8) 50%,white 100%);
+            pointer-events: null;
         }
     }
 }
@@ -39,10 +58,18 @@
     background-repeat:no-repeat;
     border-radius: 4px;
     background-position:center;
-    transition: opacity 0.2s ease-out;
-    transition-delay: 0.3s;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 
     // hide button
     opacity:0;
+
+    &:hover{
+        background-color: darken($light-red, 5%);
+    }
+
+    //click
+    &:active{
+        background-color: darken($light-red, 8%);
+    }
 }
 
