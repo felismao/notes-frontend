@@ -18,7 +18,7 @@ export class NoteDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     //check if update or create
-    this.note= new Note()
+    this.note= new Note();
     this.route.params.subscribe((params:Params)=>{
       if(params.id){
         this.note=this.notesService.get(params.id);
