@@ -30,6 +30,7 @@ export class NoteDetailsComponent implements OnInit {
 
     this.note= new Note()
   }
+
 onSubmit(form:NgForm){
   if(this.new){
     // save
