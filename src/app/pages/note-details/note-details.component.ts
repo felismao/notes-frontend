@@ -18,6 +18,7 @@ export class NoteDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     //check if update or create
+    this.note= new Note()
     this.route.params.subscribe((params:Params)=>{
       if(params.id){
         this.note=this.notesService.get(params.id);
@@ -27,18 +28,17 @@ export class NoteDetailsComponent implements OnInit {
         this.new =true;
       }
   })
-
-    this.note= new Note()
   }
 
 onSubmit(form:NgForm){
   if(this.new){
     // save
     this.notesService.add(form.value);
-    this.router.navigateByUrl('/');
   }else{
     this.notesService.update(this.noteId, form.value.title, form.value.body);
   }
+  this.router.navigateByUrl('/');
+
 }
 
 cancel(){
