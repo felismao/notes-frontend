@@ -82,15 +82,58 @@ import { NotesService } from 'src/app/shared/notes.service';
 export class NotesListComponent implements OnInit {
 
   notes: Note[] = new Array<Note>();
+  filteredNotes: Note[] = new Array<Note>();
   constructor(private notesService: NotesService) {}
 
   ngOnInit(): void {
     // get all notes from NotesService
     this.notes = this.notesService.getAll();
+    this.filteredNotes = this.notes;
   }
 
   deleteNote(id: number){
     this.notesService.delete(id);
+  }
+
+  filter(query:string){
+    query = query.toLowerCase().trim();
+
+    let allResults: Note[] = new Array<Note>();
+    // split to individual words
+    let terms: string[] = query.split(' ');
+    // remove duplicate search
+    terms = this.removeDuplicates(terms);
+    // compile all relevant results
+    terms.forEach(term=>{
+      let result = this.relavantNotes(term);
+      // append
+      allResults = [...allResults, ...result] // deconstructing array (basically merge the results)
+    });
+    // allResults includes duplicate notes because a particular notes can be a result of many search terms
+    // we dont want to show duplicates and need tp remove in the UI
+    let uniqueResults = this.removeDuplicates(allResults);
+    this.filteredNotes = uniqueResults; 
+
+  }
+
+  removeDuplicates(arr:Array<any>): Array<any>{
+    let uniqueResults: Set<any> = new Set<any>();
+    // loop through array and add items to the set
+    arr.forEach(e=> uniqueResults.add(e));
+
+    return Array.from(uniqueResults);
+  }
+
+  relavantNotes(query: string) : Array<Note>{
+    query = query.toLowerCase().trim();
+    let relavantNotes = this.notes.filter(note=>{
+      if (note.body.toLowerCase().includes(query) || note.title.toLowerCase().includes(query)){
+        return true;
+      }
+      return false;
+    })
+    return relavantNotes;
+
   }
 
 }
