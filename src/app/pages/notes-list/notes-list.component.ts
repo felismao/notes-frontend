@@ -1,5 +1,5 @@
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Note } from 'src/app/shared/note.model';
 import { NotesService } from 'src/app/shared/notes.service';
 
@@ -83,25 +83,16 @@ export class NotesListComponent implements OnInit {
 
   notes: Note[] = new Array<Note>();
   filteredNotes: Note[] = new Array<Note>();
-
-  @ViewChild('filterInput') filterInputElRef :ElementRef<HTMLInputElement>
   constructor(private notesService: NotesService) {}
 
   ngOnInit(): void {
     // get all notes from NotesService
     this.notes = this.notesService.getAll();
-    this.filter(' ');
+    this.filteredNotes = this.notes;
   }
 
-  deleteNote(note:Note){
-    let noteId = this.notesService.getId(note);
-    this.notesService.delete(noteId);
-    this.filter(this.filterInputElRef.nativeElement.value);
-  }
-
-  generateNoteURL(note: Note){
-    let noteId = this.notesService.getId(note);
-    return String(noteId);
+  deleteNote(id: number){
+    this.notesService.delete(id);
   }
 
   filter(query:string){
@@ -123,9 +114,6 @@ export class NotesListComponent implements OnInit {
     let uniqueResults = this.removeDuplicates(allResults);
     this.filteredNotes = uniqueResults; 
 
-    //sort by relevancy
-    this.sortResults(allResults);
-
   }
 
   removeDuplicates(arr:Array<any>): Array<any>{
@@ -139,40 +127,13 @@ export class NotesListComponent implements OnInit {
   relavantNotes(query: string) : Array<Note>{
     query = query.toLowerCase().trim();
     let relavantNotes = this.notes.filter(note=>{
-      if (note.title && note.title.toLowerCase().includes(query)){
-        return true;
-      }
-      if(note.body && note.body.toLowerCase().includes(query)){
+      if (note.body.toLowerCase().includes(query) || note.title.toLowerCase().includes(query)){
         return true;
       }
       return false;
     })
     return relavantNotes;
-  }
 
-  sortResults(searchResults: Note[]){
-    // sort the relevancy
-    let noteCountObj: any={}; // format is key:value => NoteId: number(note Object: count)
-    searchResults.forEach(note =>{
-      let noteId = this.notesService.getId(note);
-
-      if (noteCountObj[noteId]){
-        noteCountObj[noteId]+= 1
-      } else{
-        noteCountObj[noteId] =1;
-      }
-    })
-
-    this.filteredNotes = this.filteredNotes.sort((a: Note, b:Note)=>{
-      let aId = this.notesService.getId(a);
-      let bId = this.notesService.getId(b);
-
-      let aCount = noteCountObj[aId];
-      let bCount = noteCountObj[bId];
-
-      return bCount - aCount;;
-
-    })
   }
 
 }
